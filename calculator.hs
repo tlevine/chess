@@ -4,7 +4,7 @@ import qualified Data.Map as Map
 type Function = Integer -> Integer -> Integer
 
 data Token = Number Integer |
-             Operation Char |
+             Operation Function |
              M |
              R |
              Equal
@@ -18,13 +18,13 @@ number :: P.Parser Token
 number = do x <- P.many1 P.digit
             return $ Number 8 -- $ (read x) :: Integer
 
-operationMapping :: Map.Map Char Function
-operationMapping = Map.fromList [('+', (+)), ('-', (-)),
-                                 ('*', (*)), ('/', div)]
-
 operation :: P.Parser Token
 operation = do x <- P.choice $ map P.char ['+', '-', '*', '/']
-               return $ Operation x
+               return $ Operation $ case x of
+                 '+' -> (+)
+                 '-' -> (-)
+                 '*' -> (*)
+                 '/' -> div
 
 m :: P.Parser Token
 m = do P.char 'M'
@@ -38,4 +38,4 @@ equal :: P.Parser Token
 equal = do P.char '='
            return Equal
 
-main = do putStrLn "hi"
+main = undefined
