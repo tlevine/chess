@@ -1,32 +1,29 @@
--- +, -, digit, =
-type Operation = Integer -> Integer -> Integer
+import qualified Text.ParserCombinators.Parsec as P
 
--- Previous number, current number, stored number, current operation
-type State = (Integer, Integer, Integer, Operation)
+data Token = Number String |
+             Operation Char |
+             M |
+             R |
+             Equal
 
--- Each character is a command.
-type Command = State -> State
+number :: P.Parser Token
+number = do x <- P.many1 P.digit
+            return $ Number x
 
-emptyOperation :: Operation
-emptyOperation left right = (left * 10) + right
+operation :: P.Parser Token
+operation = do x <- P.choice $ map P.char ['+', '-', '*', '/']
+               return $ Operation x
 
-m :: Command
-m (previous, current, _, operation) = (previous, current, current, operation)
+m :: P.Parser Token
+m = do P.char 'M'
+       return M
 
-r :: Command
-r :: (_, current, stored, operation) = (current, stored, stored, operation)
+r :: P.Parser Token
+r = do P.char 'R'
+       return R
 
-applyOperation :: Operation -> Command
-applyOperation operation (previous, current, stored, _) = (previous, current, stored, operation)
+equal :: P.Parser Token
+equal = do P.char '='
+           return Equal
 
--- When a new operation command is run, the old operation is executed.
-
-runCommand :: State -> State
-runCommand (previous, current, stored, operation) = (current, operation previous current, stored, operation)
-
-initialState = (0, 0, 0, equal)
-
-
-runCommand initialState
-
-
+main = do putStrLn "hi"
