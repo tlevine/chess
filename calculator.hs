@@ -23,17 +23,12 @@ updateState Equal (left, right, op, stored) = (0, op left right, (+), stored)
 initialState :: State
 initialState = (0, 0, (+), 0) 
 
-calculate :: String -> Integer
-calculate program = r
-  where
-    (l, r, o, s) = evaluate (tokenize program)
-
 evaluate :: [Token] -> State
 evaluate = foldr updateState initialState
 
-tokenize :: P.Parser [Token]
-tokenize = do x <- P.many token
-              return x
+program :: P.Parser [Token]
+program = do x <- P.many token
+             return x
 
 token :: P.Parser Token
 token = do x <- P.choice [number, operation, m, r, equal]
@@ -64,4 +59,6 @@ equal = do P.char '='
            return Equal
 
 main = do
-  putStrLn $ show $ calculate "2+3="
+  x <- P.parse program "2+3="
+  let (l, r, o, s) = evaluate x
+  putStrLn $ show $ r
