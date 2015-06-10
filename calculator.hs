@@ -23,8 +23,17 @@ updateState Equal (left, right, op, stored) = (0, op left right, (+), stored)
 initialState :: State
 initialState = (0, 0, (+), 0) 
 
+
+tokenize :: P.Parser [Token]
+tokenize = do x <- P.many token
+              return x
+
 calculate :: [Token] -> State
 calculate = foldr updateState initialState
+
+token :: P.Parser Token
+token = do x <- P.choice [number, operation, m, r, equal]
+           return x
 
 number :: P.Parser Token
 number = do x <- P.many1 P.digit
