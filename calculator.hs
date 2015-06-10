@@ -4,7 +4,7 @@ import qualified Data.Map as Map
 type Function = Integer -> Integer -> Integer
 
 data Token = Number Integer |
-             Operation Function |
+             Operation Char |
              M |
              R |
              Equal
@@ -24,7 +24,7 @@ operationMapping = Map.fromList [('+', (+)), ('-', (-)),
 
 operation :: P.Parser Token
 operation = do x <- P.choice $ map P.char ['+', '-', '*', '/']
-               return $ Operation $ Just $ Map.lookup x operationMapping
+               return $ Operation x
 
 m :: P.Parser Token
 m = do P.char 'M'
