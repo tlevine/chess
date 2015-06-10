@@ -58,7 +58,10 @@ equal :: P.Parser Token
 equal = do P.char '='
            return Equal
 
-main = do
-  x <- P.parse program "2+3="
+calculate programText = do
+  x <- P.parse program "(blah)" programText
   let (l, r, o, s) = evaluate x
-  putStrLn $ show $ r
+  return r
+
+main = do
+  putStrLn $ show $ calculate "3+8*9="
