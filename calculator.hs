@@ -1,18 +1,30 @@
 import qualified Text.ParserCombinators.Parsec as P
+import qualified Data.Map as Map
 
-data Token = Number String |
-             Operation Char |
+type Function = Integer -> Integer -> Integer
+
+data Token = Number Integer |
+             Operation Function |
              M |
              R |
              Equal
 
+-- The left of the calculator program is the beginning of the list;
+-- everything is reversed
+--calculate :: [Token] -> Integer
+--calculate = foldr applyToken emptyState
+
 number :: P.Parser Token
 number = do x <- P.many1 P.digit
-            return $ Number x
+            return $ Number 8 -- $ (read x) :: Integer
+
+operationMapping :: Map.Map Char Function
+operationMapping = Map.fromList [('+', (+)), ('-', (-)),
+                                 ('*', (*)), ('/', div)]
 
 operation :: P.Parser Token
 operation = do x <- P.choice $ map P.char ['+', '-', '*', '/']
-               return $ Operation x
+               return $ Operation $ Just $ Map.lookup x operationMapping
 
 m :: P.Parser Token
 m = do P.char 'M'
