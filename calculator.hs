@@ -1,7 +1,8 @@
+-- +, -, digit, =
 type Operation = Integer -> Integer -> Integer
 
--- Current number, stored number, current operation
-type State = (Integer, Integer, Operation)
+-- Previous number, current number, stored number, current operation
+type State = (Integer, Integer, Integer, Operation)
 
 -- Each character is a command.
 type Command = State -> State
@@ -10,32 +11,22 @@ emptyOperation :: Operation
 emptyOperation left right = (left * 10) + right
 
 m :: Command
-m (current, _) = (current, current)
+m (previous, current, _, operation) = (previous, current, current, operation)
 
 r :: Command
-r :: (_, stored) = (stored, stored)
+r :: (_, current, stored, operation) = (current, stored, stored, operation)
 
-operate :: Operation -> Command
-operate operation (current, stored, _) = (current, stored, operation)
+applyOperation :: Operation -> Command
+applyOperation operation (previous, current, stored, _) = (previous, current, stored, operation)
+
+-- When a new operation command is run, the old operation is executed.
+
+runCommand :: State -> State
+runCommand (previous, current, stored, operation) = (current, operation previous current, stored, operation)
+
+initialState = (0, 0, 0, equal)
 
 
+runCommand initialState
 
 
-
-
-
-data Token = Digit Integer |
-             Operation (Integer -> Integer) |
-
-fromChar :: Char -> Token
-fromChar char
-
-showWord a b = a ++ " (" ++ b ++ ")"
-instance Show Word where
-  show (Name text) = showWord "Name" text
-  show (Literal text) = showWord "Literal" text
-  show (Number text) = showWord "Number" text
-  show (SpecialCharacter text) = showWord "Special" text
-
-calculate :: [Token] -> Integer
-calculate
